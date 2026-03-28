@@ -8,6 +8,10 @@ CustomItemLoader（CIL）は、Rust/uMod 用のカスタムアイテム定義ロ
 It allows you to define custom items in JSON, load them into the server, grant them in-game, verify definitions, manage FX, and integrate with other plugins.  
 JSON ファイルで独自アイテムを定義し、サーバーへ読み込み、ゲーム内付与、定義検証、FX管理、他プラグイン連携を行えます。
 
+> **Note / 補足**  
+> This plugin focuses on defining, loading, validating, and integrating custom items for Rust/uMod servers.  
+> このプラグインは、Rust/uMod サーバー向けにカスタムアイテムの定義、読み込み、検証、連携を行うことを主目的としています。
+
 ---
 
 ## Overview / 概要
@@ -31,7 +35,7 @@ JSON ファイルで独自アイテムを定義し、サーバーへ読み込み
 ---
 
 ## Integrations / Recommended Plugins  
-## 連携プラグイン / 推奨プラグイン
+## 連携プラグイン / 推奨連携
 
 ### 1. CustomItemDefinitions *(recommended / 推奨)*
 **EN:** CIL can push loaded item definitions into a central registry. Other plugins such as shops, loot systems, UI tools, and skill plugins can query item IDs, shortnames, rarity, and more through a stable API.  
@@ -120,6 +124,38 @@ oxide.revoke <user or group> <name or steam id> <permission>
 | `/cilfxverify` | Runs FX verification with optional filters and intervals | フィルタや間隔付きでFX検証を実行 |
 | `/ciltestfx <prefabPath> [count] [interval]` | Repeatedly plays a test effect for debugging | 指定FXを繰り返し再生してデバッグ |
 | `/forcejump` | Performs a configurable forward/upward Force Jump | 前方＋上方向へ Force Jump を実行 |
+
+---
+
+## Configuration / 設定
+
+### English
+This plugin stores its settings in the config directory and allows reloading through the chat command system.
+
+**Config file**
+```txt
+oxide/config/CustomItemLoader.json
+```
+
+**Operational notes**
+- Item definitions are stored in the data folder, not in the config file
+- The plugin can reload config and item definitions with `/cil config`
+- JSON validation is available through `/cil jsoncheck [file]`
+- Debug output can be toggled with `/cil debug`
+
+### 日本語
+このプラグインの設定は config ディレクトリに保存され、チャットコマンドから再読み込みできます。
+
+**設定ファイル**
+```txt
+oxide/config/CustomItemLoader.json
+```
+
+**運用メモ**
+- アイテム定義本体は config ではなく data フォルダに保存されます
+- `/cil config` で設定とアイテム定義を再読み込みできます
+- `/cil jsoncheck [file]` で JSON 構文検証を実行できます
+- `/cil debug` でデバッグ出力を切り替えできます
 
 ---
 
@@ -326,5 +362,19 @@ You can create another file such as `lightsaber_blue.json` and reuse it as a tem
 
 ## Notes / 補足
 
-**EN:** This README is a bilingual summary intended for GitHub presentation and quick reference.  
-**JP:** このREADMEは、GitHub掲載用および概要把握用の英和サマリーです。
+### English
+- The plugin can operate on its own, but becomes more powerful when combined with integration plugins.
+- It supports legacy key compatibility for older JSON item definitions.
+- The data folder watcher helps reduce reload friction during iterative item editing.
+
+### 日本語
+- このプラグインは単体でも動作しますが、連携プラグインと組み合わせることでより強力になります。
+- 旧形式のJSONアイテム定義に対する互換キーもサポートしています。
+- データフォルダ監視により、繰り返し編集時の再読み込み負担を軽減できます。
+
+---
+
+## Summary / まとめ
+
+**EN:** CustomItemLoader is a flexible bilingual-friendly custom item framework for Rust/uMod servers, centered on JSON-driven item definitions, validation, FX support, and plugin integrations.  
+**JP:** CustomItemLoader は、JSON駆動のアイテム定義、検証、FX対応、プラグイン連携を中核とした、Rust/uMod サーバー向けの柔軟なカスタムアイテム基盤です。
