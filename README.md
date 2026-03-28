@@ -442,5 +442,3 @@ Basic workflow:
 3. Use /cil give <shortname> to test the item and its FX
 
 ------------------------------
-End of file
-------------------------------
