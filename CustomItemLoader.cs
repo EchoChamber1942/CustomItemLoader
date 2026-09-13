@@ -13,7 +13,7 @@ using Oxide.Game.Rust.Cui;
 
 namespace Oxide.Plugins
 {
-    [Info("CustomItemLoader", "EchoChamber", "1.00.000")] // バージョンを明確化
+    [Info("CustomItemLoader", "EchoChamber", "1.01.001")] // バージョンを明確化
     [Description("Loads and manages custom item definitions (JSON) with effect verification, UI, and logging.")]
     public class CustomItemLoader : RustPlugin
     {
@@ -1139,7 +1139,9 @@ private bool IsLightsaber(Item item)
                 switch (kv.Key.ToLowerInvariant())
                 {
                     case "runspeed":
-                        player.ClientRPCPlayer(null, player, "SetPlayerSpeed", "Movement", kv.Value);
+                        // Rust 2026-07+: SetPlayerSpeed RPC now expects a byte mode instead of the old string "Movement".
+                        // Disable this legacy passive safely until the current mode mapping is confirmed.
+                        LogWarn($"runspeed passive is temporarily disabled on current Rust API (requested multiplier: {kv.Value}).");
                         LogCil("DEBUG", $"Applied runspeed {kv.Value} to {player.displayName}");
                         break;
                     case "damagereduction":
@@ -1172,7 +1174,8 @@ private bool IsLightsaber(Item item)
         private void RemovePassiveEffects(BasePlayer player)
         {
             // スピードリセット
-            player.ClientRPCPlayer(null, player, "SetPlayerSpeed", "Movement", 1f);
+            // Rust 2026-07+: legacy SetPlayerSpeed("Movement", ...) signature was removed.
+            // No RPC reset is sent because runspeed application is disabled above.
             LogCil("DEBUG", $"Reset player speed for {player.displayName}");
 
             // Nightvision リセット
@@ -1807,7 +1810,7 @@ private void SpawnEffect(string prefab, Vector3 pos) {
             }
 
             Vector3 jumpVelocity = player.transform.up * config.ForceJumpUpwardVelocity + player.transform.forward * config.ForceJumpForwardBoost;
-            player.ClientRPCPlayer(null, player, "ForcePositionTo", player.transform.position + jumpVelocity);
+            player.ClientRPC(RpcTarget.Player("ForcePositionTo", player), player.transform.position + jumpVelocity);
             SendPlayerMsg(player, "<color=#00ff00>フォースジャンプ！</color>");
         }
 
@@ -2674,10 +2677,10 @@ private void CmdCilGiveConsole(ConsoleSystem.Arg arg)
         arg.ReplyWith("使い方: cil.give <playername> <shortname> [amount]");
         return;
     }
-    string playerName = arg.Args[0];
-    string shortname = arg.Args[1];
+    string playerName = arg.Args[0].ToString();
+    string shortname = arg.Args[1].ToString();
     int amount = 1;
-    if (arg.Args.Length > 2 && !int.TryParse(arg.Args[2], out amount)) amount = 1;
+    if (arg.Args.Length > 2 && !int.TryParse(arg.Args[2].ToString(), out amount)) amount = 1;
     var target = BasePlayer.Find(playerName);
     if (target == null)
     {
